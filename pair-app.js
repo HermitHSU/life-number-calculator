@@ -51,6 +51,50 @@
     items.forEach(([title,text])=>list.append(el('dt',title),el('dd',text)));
     return list;
   }
+  function syncItemButton(){
+    const items=[...get('pair-items').querySelectorAll('.pair-item')];
+    get('expand-pair-items').textContent=items.length&&items.every(item=>item.open)?'收合全部項目':'展開全部項目';
+  }
+  get('expand-pair-items').addEventListener('click',()=>{
+    const items=[...get('pair-items').querySelectorAll('.pair-item')];
+    const next=!items.every(item=>item.open);
+    items.forEach(item=>{item.open=next;});syncItemButton();
+  });
+  function itemCard(item,report){
+    const card=el('details',undefined,'pair-item');card.dataset.key=item.key;card.open=item.key==='CFG';
+    const summary=el('summary');
+    const title=el('span',`${String(item.number).padStart(2,'0')} · ${item.label}`,'pair-item-title');
+    const codes=el('span',`${report.self.name} ${item.selfCode} ／ ${report.other.name} ${item.otherCode}`,'pair-item-codes');
+    summary.append(title,codes,el('span',item.status,'pair-item-status'));
+    summary.setAttribute('aria-label',`${item.label} ${item.selfCode} 與 ${item.otherCode}：逐項比較`);
+    card.append(summary);
+    const content=el('div',undefined,'pair-item-content');
+    content.append(el('p',item.note,'pair-common'),el('p',item.strategyBasis,'hint'));
+    content.append(el('h3','八大面向差異'));
+    const facets=el('div',undefined,'pair-item-facets');
+    item.facets.forEach(facet=>{
+      const section=el('section',undefined,'pair-facet');section.dataset.facet=facet.key;
+      const heading=el('h4',facet.title);heading.append(el('span',facet.same?'內容相同':'分別查看','facet-state'));
+      const sides=el('div',undefined,'pair-facet-sides');
+      [[report.self.name,item.selfCode,facet.selfText],[report.other.name,item.otherCode,facet.otherText]].forEach(([name,code,text])=>{
+        const side=el('div');side.append(el('p',`${name} · ${code}`,'pair-side-label'),el('p',text));sides.append(side);
+      });
+      section.append(heading,sides);facets.append(section);
+    });
+    content.append(facets,el('h3','本項可能摩擦與協調'));
+    const conflicts=el('div',undefined,'pair-item-conflicts');
+    item.conflicts.forEach(conflict=>{
+      const section=el('section',undefined,'pair-advice');section.append(el('h4',conflict.title),el('p',conflict.reason),definitionList([['先問彼此',conflict.question],['共同約定',conflict.agreement]]));conflicts.append(section);
+    });
+    content.append(conflicts,el('h3','本項雙向溝通建議'));
+    const directions=el('div',undefined,'pair-directions');
+    item.directions.forEach(direction=>{
+      const section=el('section',undefined,'pair-advice');section.append(el('h4',direction.title),definitionList([['開場提問',direction.opening],['交流方式',direction.approach],['給自己的提醒',direction.selfReminder],['共同下一步',direction.agreement]]));directions.append(section);
+    });
+    content.append(directions);
+    const business=el('details',undefined,'pair-item-business');business.append(el('summary','本項業務溝通範例（自己 → 對方）'),definitionList([['開場提問',item.business.opening],['提案方式',item.business.proposal],['遇到疑慮',item.business.objection],['後續追蹤',item.business.followUp]]));
+    content.append(business);card.append(content);card.addEventListener('toggle',syncItemButton);return card;
+  }
   function render(report){
     get('pair-basis').textContent=report.basis;
     get('pair-people').replaceChildren(personCard(report.self,'自己'),personCard(report.other,'對方'));
@@ -65,6 +109,7 @@
       body.append(row);
     });
     table.append(caption,head,body);get('pair-common').textContent=report.common;
+    get('pair-items').replaceChildren(...report.items.map(item=>itemCard(item,report)));syncItemButton();
     get('pair-conflicts').replaceChildren(...report.conflicts.map(conflict=>{
       const card=el('article',undefined,'pair-advice');card.append(el('h3',conflict.title),el('p',conflict.reason),definitionList([['先問彼此',conflict.question],['可以一起約定',conflict.agreement]]));return card;
     }));
@@ -82,4 +127,12 @@
     }catch(error){get('pair-error').textContent=error.message;}
   });
   get('pair-print').addEventListener('click',()=>window.print());
+  let printStates=[];
+  window.addEventListener('beforeprint',()=>{
+    printStates=[...get('pair-result').querySelectorAll('details')].map(node=>[node,node.open]);
+    printStates.forEach(([node])=>{node.open=true;});
+  });
+  window.addEventListener('afterprint',()=>{
+    printStates.forEach(([node,open])=>{node.open=open;});printStates=[];syncItemButton();
+  });
 })();

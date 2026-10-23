@@ -34,7 +34,7 @@
     return {name:String(name||'').trim().slice(0,60)||label,chart,profile,theme,style:styles[theme]||null,observed:!!preference};
   }
   function conflicts(a,b){
-    if(!a.style||!b.style) return [{title:'先確認實際偏好',reason:'其中一方的主性格未收錄在81組資料中，不能據此比較風格。',question:'你希望先聽重點、看資料，還是先說自己的想法？',agreement:'可在上方選擇雙方實際溝通偏好，再重新比較。'}];
+    if(!a.style||!b.style) return [{title:'先確認實際偏好',reason:'其中一方的數字組合未收錄在81組資料中，不能據此比較風格。',question:'你希望先聽重點、看資料，還是先說自己的想法？',agreement:'可在上方選擇雙方實際溝通偏好，再重新比較。'}];
     const x=a.style.axes,y=b.style.axes,out=[];
     if(x[0]!==y[0]) out.push({title:'討論節奏不同',reason:`${a.name}這側的起點是「${a.style.pace}」；${b.name}這側是「${b.style.pace}」。若未先對齊，一方可能覺得被催，另一方覺得進度太慢。`,question:'這件事需要先快速掌握方向，還是留時間逐步確認？',agreement:'先用一句話說目標，再共同約定資料補充與回覆時間；保留暫停的選擇。'});
     if(x[1]!==y[1]) out.push({title:'需要的資訊不同',reason:`${a.name}先關注「${a.style.information}」，${b.name}先關注「${b.style.information}」。只照自己的方式說，對方可能覺得沒抓到重點。`,question:'你最想先知道哪一項：結果、細節、風險，還是彼此的期待？',agreement:'先問需求，再用「重點摘要＋可選細節」說明；請對方用自己的話確認理解。'});
@@ -50,12 +50,41 @@
       selfReminder:from.style?`留意自己是否出現「${from.style.stress}」，先停下來確認，不替對方推斷動機。`:'先說明自己的期待與限制，不用數字替自己下結論。',
       agreement:'一次只確認一個下一步，讓對方能選擇、修改或拒絕；互動後再回顧是否有效。'};
   }
+  function itemPerson(base,code){
+    const profile=communication.lookup(code);
+    const theme=base.observed?base.theme:(profile&&profile.tags[0])||null;
+    return {...base,code,profile,theme,style:styles[theme]||null};
+  }
+  function itemComparison(self,other,key,label,codeA,codeB,index){
+    const a=itemPerson(self,codeA),b=itemPerson(other,codeB);
+    const available=!!(a.profile&&b.profile);
+    const same=codeA===codeB;
+    return {key,label,number:index+1,selfCode:codeA,otherCode:codeB,same,available,
+      status:!available?'含未收錄組合':same?'數字相同':'數字不同',
+      note:!available?'此項含未收錄組合，缺少的解說不作推測；可用實際提問確認需求。':same?'此項數字相同，原始解說相同；實際偏好與經驗仍需分別確認。':`此項分別對照 ${codeA} 與 ${codeB} 的解說，並從差異探索互動方式。`,
+      strategyBasis:a.observed||b.observed?'下方八大面向保留各數字原有分析；互動及業務策略優先採用選填的實際偏好。':'互動策略依本項雙方數字的溝通主題整理，請先用提問確認。',
+      facets:communication.dimensions.map(([facet,title])=>({key:facet,title,
+        selfText:a.profile?a.profile.facets[facet]:'此組合未收錄，尚無對應分析。',
+        otherText:b.profile?b.profile.facets[facet]:'此組合未收錄，尚無對應分析。',
+        same:!!(a.profile&&b.profile&&a.profile.facets[facet]===b.profile.facets[facet])})),
+      conflicts:available?conflicts(a,b):[{title:'此項資料不足，先了解實際偏好',reason:'不能用其他位置的解說代替本項缺少的資料。',question:'針對這個面向，你最在意什麼？希望怎麼討論？',agreement:'先各自說一項需求與界線，再找出雙方同意的下一步。'}],
+      directions:[direction(a,b),direction(b,a)],
+      business:{opening:direction(a,b).opening,
+        proposal:b.style?b.style.proposal:'先問需求及評估條件，不根據未收錄組合推測。',
+        objection:'「針對這一項，目前最讓你猶豫的是什麼？我們可以先釐清，也可以暫時不決定。」',
+        followUp:b.style?b.style.follow:'取得同意後，再約定回顧時間與下一步。'}
+    };
+  }
   function compare(input){
     const self=person(input.selfBirthday,input.selfName,input.selfPreference||'','自己');
     const other=person(input.otherBirthday,input.otherName,input.otherPreference||'','對方');
     const sameCode=self.chart.mainPersonality===other.chart.mainPersonality;
     return {self,other,
-      basis:'以雙方主性格 CFG 的81組解說作為探索起點；隱藏號僅列作個人參考。選填的實際偏好優先用於互動策略。',
+      basis:'整體摘要以主性格 CFG 為探索起點；下方12組與隱藏號逐項使用各自數字的解說。選填的實際偏好優先用於互動策略。',
+      items:[...self.chart.groups.map((group,index)=>itemComparison(self,other,group.key,
+        ['父基因（事業）','母基因（婚姻）','主性格','人生過程1','人生過程2','子女下屬','事業過程1','事業過程2','當下朋友','婚姻過程1','婚姻過程2','未來財富健康（晚年）'][index],
+        group.value,other.chart.groups[index].value,index)),
+        itemComparison(self,other,'hidden','隱藏號碼',self.chart.hidden,other.chart.hidden,12)],
       common:sameCode?'主性格相同，原始解說相同；實際經驗、需求與溝通偏好仍可能不同。':self.style&&other.style?self.theme===other.theme?`兩側都以「${self.style.name}」為溝通起點，可能有共通語言；仍需各自確認需求、界線與分工。`:`可探索的互補：${self.name}帶來「${self.style.information}」的視角，${other.name}帶來「${other.style.information}」的視角；先確認雙方是否認同，再協調分工。`:'目前資料不足以推測互補，先詢問彼此的需求與偏好。',
       conflicts:conflicts(self,other),directions:[direction(self,other),direction(other,self)],
       business:{opening:direction(self,other).opening,proposal:other.style?other.style.proposal:'先詢問需求與評估條件，不根據生日猜測購買動機。',
