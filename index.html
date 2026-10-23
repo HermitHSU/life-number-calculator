@@ -5,10 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#173e3a">
   <title>生命靈數手機排盤</title>
-  <link rel="stylesheet" href="styles.css?v=20261023-analysis81">
+  <link rel="stylesheet" href="styles.css?v=20261023-facets81">
   <script src="engine.js" defer></script>
-  <script src="analysis.js?v=20261023-analysis81" defer></script>
-  <script src="app.js?v=20261023-analysis81" defer></script>
+  <script src="analysis.js?v=20261023-facets81" defer></script>
+  <script src="communication.js?v=20261023-facets81" defer></script>
+  <script src="app.js?v=20261023-facets81" defer></script>
 </head>
 <body>
 <main>
@@ -32,7 +33,7 @@
     <div class="hero"><div><span>生命靈數 G</span><strong id="life"></strong></div><div><span>主性格 CFG</span><strong id="main"></strong></div></div>
     <div class="summary"><article><h3>星號數字 A／E／G</h3><p id="stars"></p></article><article><h3>本源夢想</h3><p id="dream"></p></article><article><h3>缺失數字</h3><p id="missing"></p></article></div>
     <section class="panel"><h2>A～P 數字盤</h2><div id="number-grid" class="number-grid"></div><p class="hint">★ 為星號數字。缺失數字僅以 A～G 為準。</p></section>
-    <section class="panel"><h2>12 組數字與隱藏號</h2><p class="hint">依各組三位數對照 81 組聯合密碼，顯示特質與提醒。以下為民俗詮釋，供探索與交流，並非科學人格測驗；請以實際互動為準。</p><div id="groups" class="groups"></div><div class="hidden-number"><div><span>13 · CFG 逐位加倍化簡</span><h3>隱藏號碼</h3><p>由主性格的三個數字各自加倍、各自化簡，再依原順序排列；逐位計算，不進位。</p></div><strong id="hidden"></strong><p id="hidden-analysis" class="combination-analysis"></p></div><p class="hint">解說沿用你在「挖掘数字易经组合含义」對話整理的 81 組資料。</p></section>
+    <section class="panel"><h2>12 組數字與隱藏號</h2><p class="hint">依各組三位數對照 81 組聯合密碼，顯示特質與提醒。以下為民俗詮釋，供探索與交流，並非科學人格測驗；請以實際互動為準。</p><p class="hint">展開每組可看八大面向及業務溝通範例。內在需求與建議為原解說的整理延伸，請先用問題確認；對方的實際回答優先於數字推測。</p><button id="expand-analysis" class="secondary" type="button">展開全部分析</button><div id="groups" class="groups"></div><div class="hidden-number"><div><span>13 · CFG 逐位加倍化簡</span><h3>隱藏號碼</h3><p>由主性格的三個數字各自加倍、各自化簡，再依原順序排列；逐位計算，不進位。</p></div><strong id="hidden"></strong><p id="hidden-analysis" class="combination-analysis"></p><div id="hidden-communication"></div></div><p class="hint">核心解說沿用「挖掘数字易经组合含义」對話整理的 81 組資料；八大面向與實用範例為後續整理延伸。</p></section>
     <p id="result-note" class="note"></p>
   </section>
   <footer>依指定公式計算，供自我探索與娛樂參考。<br>無需帳號 · 無外部套件 · 可離線使用</footer>
