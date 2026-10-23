@@ -5,16 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#173e3a">
   <title>生命靈數手機排盤</title>
-  <link rel="stylesheet" href="styles.css?v=20261023-facets81">
+  <link rel="stylesheet" href="styles.css?v=20261023-pair">
   <script src="engine.js" defer></script>
   <script src="analysis.js?v=20261023-facets81" defer></script>
   <script src="communication.js?v=20261023-facets81" defer></script>
-  <script src="app.js?v=20261023-facets81" defer></script>
+  <script src="app.js?v=20261023-pair" defer></script>
+  <script src="pair-engine.js?v=20261023-pair" defer></script>
+  <script src="pair-app.js?v=20261023-pair" defer></script>
 </head>
 <body>
 <main>
   <header><p class="eyebrow">認識數字，也認識自己</p><h1>生命靈數<span>手機排盤</span></h1><p>輸入生日，查看你的數字組合。</p></header>
-  <section class="panel" aria-labelledby="form-title">
+  <div class="mode-tabs" role="tablist" aria-label="分析模式"><button id="single-tab" role="tab" aria-selected="true" aria-controls="single-mode" type="button">個人排盤</button><button id="pair-tab" role="tab" aria-selected="false" aria-controls="pair-mode" tabindex="-1" type="button">雙人分析</button></div>
+  <div id="single-mode" role="tabpanel" aria-labelledby="single-tab">
+  <section class="panel input-panel" aria-labelledby="form-title">
     <h2 id="form-title">基本資料</h2>
     <form id="chart-form">
       <label for="birthday">西元生日 <span class="required">必填</span></label>
@@ -36,6 +40,40 @@
     <section class="panel"><h2>12 組數字與隱藏號</h2><p class="hint">依各組三位數對照 81 組聯合密碼，顯示特質與提醒。以下為民俗詮釋，供探索與交流，並非科學人格測驗；請以實際互動為準。</p><p class="hint">展開每組可看八大面向及業務溝通範例。內在需求與建議為原解說的整理延伸，請先用問題確認；對方的實際回答優先於數字推測。</p><button id="expand-analysis" class="secondary" type="button">展開全部分析</button><div id="groups" class="groups"></div><div class="hidden-number"><div><span>13 · CFG 逐位加倍化簡</span><h3>隱藏號碼</h3><p>由主性格的三個數字各自加倍、各自化簡，再依原順序排列；逐位計算，不進位。</p></div><strong id="hidden"></strong><p id="hidden-analysis" class="combination-analysis"></p><div id="hidden-communication"></div></div><p class="hint">核心解說沿用「挖掘数字易经组合含义」對話整理的 81 組資料；八大面向與實用範例為後續整理延伸。</p></section>
     <p id="result-note" class="note"></p>
   </section>
+  </div>
+  <div id="pair-mode" role="tabpanel" aria-labelledby="pair-tab" hidden>
+    <section class="panel input-panel" aria-labelledby="pair-form-title">
+      <p class="eyebrow">從了解彼此開始</p><h2 id="pair-form-title">雙人生日分析</h2>
+      <p>比較溝通風格，找出值得確認的差異，練習更合適的互動方式。</p>
+      <form id="pair-form">
+        <div class="pair-inputs">
+          <fieldset><legend>自己</legend>
+            <label for="self-birthday">自己的生日 <span class="required">必填</span></label><input id="self-birthday" type="date" min="0001-01-01" max="9999-12-31" required>
+            <label for="self-name">自己的稱呼 <span>選填</span></label><input id="self-name" type="text" maxlength="60" placeholder="自己">
+            <label for="self-preference">自己的實際溝通偏好 <span>選填</span></label><select id="self-preference"></select>
+          </fieldset>
+          <fieldset><legend>對方</legend>
+            <label for="other-birthday">對方的生日 <span class="required">必填</span></label><input id="other-birthday" type="date" min="0001-01-01" max="9999-12-31" required>
+            <label for="other-name">對方的稱呼 <span>選填</span></label><input id="other-name" type="text" maxlength="60" placeholder="對方">
+            <label for="other-preference">對方的實際溝通偏好 <span>選填</span></label><select id="other-preference"></select>
+          </fieldset>
+        </div>
+        <p class="hint">只填兩個生日也能使用。若已知道對方的偏好，請選填，互動策略會優先採用實際偏好。生日與稱呼僅在此頁處理，不會傳送或儲存。</p>
+        <div class="pair-form-actions"><button type="submit">比較雙方溝通</button><button id="swap-pair" class="secondary" type="button">交換雙方資料</button></div>
+        <p id="pair-error" role="alert"></p>
+      </form>
+    </section>
+    <section id="pair-result" aria-labelledby="pair-result-title" hidden>
+      <div class="result-heading"><div><p class="eyebrow">看見差異，也練習理解</p><h2 id="pair-result-title">雙人互動分析</h2></div><button id="pair-print" class="secondary" type="button">列印／PDF</button></div>
+      <p class="hint">這是民俗解說延伸的溝通探索，並非科學人格測驗或關係預測。摩擦點是待確認的假設，請以雙方實際回應為準。</p>
+      <p id="pair-basis" class="hint"></p>
+      <div id="pair-people" class="pair-people"></div>
+      <section class="panel"><h2>雙方溝通風格比較</h2><div class="pair-table-wrap"><table id="pair-comparison"></table></div><p id="pair-common" class="pair-common"></p></section>
+      <section class="panel"><h2>可能產生摩擦的地方</h2><div id="pair-conflicts" class="pair-conflicts"></div></section>
+      <section class="panel"><h2>雙向人際互動建議</h2><div id="pair-directions" class="pair-directions"></div></section>
+      <section class="panel"><h2>自己與對方的業務溝通</h2><p class="hint">以下以自己為提案者、對方為接收者；也可交換雙方資料，查看反向建議。</p><dl id="pair-business" class="business-guide"></dl></section>
+    </section>
+  </div>
   <footer>依指定公式計算，供自我探索與娛樂參考。<br>無需帳號 · 無外部套件 · 可離線使用</footer>
 </main>
 </body>
