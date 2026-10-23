@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#173e3a">
+  <title>生命靈數手機排盤</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="engine.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+<main>
+  <header><p class="eyebrow">認識數字，也認識自己</p><h1>生命靈數<span>手機排盤</span></h1><p>輸入生日，查看你的數字組合。</p></header>
+  <section class="panel" aria-labelledby="form-title">
+    <h2 id="form-title">基本資料</h2>
+    <form id="chart-form">
+      <label for="birthday">西元生日 <span class="required">必填</span></label>
+      <input id="birthday" name="birthday" type="date" min="0001-01-01" max="9999-12-31" required>
+      <label for="name">姓名 <span>選填</span></label><input id="name" name="name" type="text" maxlength="60" autocomplete="name" placeholder="怎麼稱呼你？">
+      <label for="gender">性別 <span>選填</span></label><select id="gender" name="gender"><option value="">不填寫</option><option>男</option><option>女</option><option>其他</option></select>
+      <label for="birth-time">出生時間 <span>選填</span></label><input id="birth-time" name="birth-time" type="time">
+      <label for="note">備註 <span>選填</span></label><textarea id="note" name="note" rows="2" maxlength="500" placeholder="記下這次排盤的想法"></textarea>
+      <p class="hint">只有生日參與計算。資料僅在此頁處理，不會傳送或自動儲存。</p>
+      <button type="submit">開始排盤 <span aria-hidden="true">↗</span></button>
+      <p id="error" role="alert"></p>
+    </form>
+  </section>
+  <section id="result" hidden aria-labelledby="result-title">
+    <div class="result-heading"><div><p class="eyebrow">你的專屬數字</p><h2 id="result-title">排盤結果</h2><p id="identity"></p></div><button id="print" class="secondary" type="button">列印／PDF</button></div>
+    <div class="hero"><div><span>生命靈數 G</span><strong id="life"></strong></div><div><span>主性格 CFG</span><strong id="main"></strong></div></div>
+    <div class="summary"><article><h3>星號數字 A／E／G</h3><p id="stars"></p></article><article><h3>本源夢想</h3><p id="dream"></p></article><article><h3>缺失數字</h3><p id="missing"></p></article></div>
+    <section class="panel"><h2>A～P 數字盤</h2><div id="number-grid" class="number-grid"></div><p class="hint">★ 為星號數字。缺失數字僅以 A～G 為準。</p></section>
+    <section class="panel"><h2>12 組數字與隱藏號</h2><div id="groups" class="groups"></div><div class="hidden-number"><span>13 隱藏號 · CFG 逐位加倍化簡</span><strong id="hidden"></strong></div></section>
+    <p id="result-note" class="note"></p>
+  </section>
+  <footer>依指定公式計算，供自我探索與娛樂參考。<br>無需帳號 · 無外部套件 · 可離線使用</footer>
+</main>
+</body>
+</html>
