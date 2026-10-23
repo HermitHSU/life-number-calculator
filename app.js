@@ -27,6 +27,7 @@ $('chart-form').addEventListener('submit', event => {
     $('dream').textContent = r.dream;
     $('missing').textContent = r.missing.length ? r.missing.join(' / ') : '無';
     $('hidden').textContent = r.hidden;
+    $('hidden-analysis').textContent = NumerologyAnalysis.lookup(r.hidden);
     $('number-grid').replaceChildren();
     Object.keys(r.numbers).sort().forEach(key => {
       const cell = document.createElement('div');
@@ -43,7 +44,10 @@ $('chart-form').addEventListener('submit', event => {
       const title = document.createElement('h3'); title.textContent = name;
       const value = document.createElement('strong'); value.textContent = group.value;
       const description = document.createElement('p'); description.textContent = meaning;
-      item.append(label, title, value, description); $('groups').append(item);
+      const analysis = document.createElement('p');
+      analysis.className = 'combination-analysis';
+      analysis.textContent = NumerologyAnalysis.lookup(group.value);
+      item.append(label, title, value, description, analysis); $('groups').append(item);
     });
     $('result-note').textContent = $('note').value.trim();
     $('result').hidden = false;
